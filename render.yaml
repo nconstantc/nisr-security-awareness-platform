@@ -12,7 +12,7 @@ services:
       cd backend && python manage.py collectstatic --noinput
       echo "Creating superuser..."
       cd backend && python manage.py createsuperuser --noinput || echo "Superuser creation skipped or already exists"
-    startCommand: cd backend && python manage.py runserver 0.0.0.0:10000
+    startCommand: cd backend && gunicorn test_app:application --bind 0.0.0.0:10000 --log-level debug
     envVars:
       - key: DJANGO_SECRET_KEY
         sync: false
