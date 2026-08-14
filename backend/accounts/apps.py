@@ -6,4 +6,7 @@ class AccountsConfig(AppConfig):
     name = 'accounts'
 
     def ready(self):
-        from . import ldap_integration  # noqa: F401
+        try:
+    from . import ldap_integration  # noqa: F401
+except ImportError:
+    pass
