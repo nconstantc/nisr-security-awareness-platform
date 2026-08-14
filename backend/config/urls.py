@@ -3,7 +3,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
-from django.views.generic import RedirectView  # <-- ADD THIS
+from django.views.generic import RedirectView
+from django.contrib.auth.views import LoginView, LogoutView  # ADD THIS
 
 from waves.dashboard import admin_dashboard_view
 from waves.export import export_wave_csv
@@ -13,7 +14,11 @@ admin.site.site_title = "Awareness Admin"
 
 urlpatterns = [
     # Redirect root URL to login page
-    path('', RedirectView.as_view(url='/login/', permanent=False)),  # <-- ADD THIS
+    path('', RedirectView.as_view(url='/login/', permanent=False)),
+    
+    # Login and Logout at root level
+    path('login/', LoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
     
     path("admin/dashboard/", admin_dashboard_view, name="admin-dashboard"),
     path("admin/dashboard/export/<int:wave_id>/", export_wave_csv, name="admin-dashboard-export"),
