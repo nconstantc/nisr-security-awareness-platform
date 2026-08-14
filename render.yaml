@@ -12,14 +12,14 @@ services:
       cd backend && python manage.py collectstatic --noinput
       echo "Creating superuser..."
       cd backend && python manage.py createsuperuser --noinput || echo "Superuser creation skipped or already exists"
-    startCommand: cd backend && gunicorn config.wsgi:application
+    startCommand: cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:10000
     envVars:
       - key: DJANGO_SECRET_KEY
         sync: false
       - key: DJANGO_DEBUG
         value: false
       - key: DJANGO_ALLOWED_HOSTS
-        value: nisr-security-platform.onrender.com,nisr-security-awareness-platform.onrender.com,localhost,127.0.0.1
+        value: nisr-security-platform.onrender.com,nisr-security-awareness-platform.onrender.com,localhost,127.0.0.1,0.0.0.0
       - key: DATABASE_URL
         fromDatabase:
           name: nisr-platform-db
@@ -30,3 +30,5 @@ services:
         value: admin@nisr.gov.rw
       - key: DJANGO_SUPERUSER_PASSWORD
         value: NISR@2026Secure!
+      - key: FIELD_ENCRYPTION_KEY
+        value: Ll5NCMJhWO9Vfs9ZWT8fQRBKU-r_en5w4VzQc9FpP9Q=
