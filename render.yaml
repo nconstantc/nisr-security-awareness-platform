@@ -4,8 +4,14 @@ services:
     name: nisr-security-platform
     runtime: python3
     buildCommand: |
-      pip install -r requirements.txt
+      echo "Installing dependencies..."
+      pip install -r backend/requirements.txt
+      echo "Running migrations..."
+      cd backend && python manage.py migrate --noinput
+      echo "Collecting static files..."
       cd backend && python manage.py collectstatic --noinput
+      echo "Creating superuser..."
+      cd backend && python manage.py createsuperuser --noinput || echo "Superuser creation skipped or already exists"
     startCommand: cd backend && gunicorn config.wsgi:application
     envVars:
       - key: DJANGO_SECRET_KEY
@@ -20,3 +26,7 @@ services:
           property: connectionString
       - key: PYTHON_VERSION
         value: 3.11.0
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: admin@nisr.gov.rw
+      - key: DJANGO_SUPERUSER_PASSWORD
+        value: NISR@2026Secure!
