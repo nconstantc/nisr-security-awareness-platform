@@ -3,6 +3,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import JsonResponse
 from django.urls import include, path
+from django.views.generic import RedirectView  # <-- ADD THIS
 
 from waves.dashboard import admin_dashboard_view
 from waves.export import export_wave_csv
@@ -11,6 +12,9 @@ admin.site.site_header = f"Awareness (v{settings.APP_VERSION})"
 admin.site.site_title = "Awareness Admin"
 
 urlpatterns = [
+    # Redirect root URL to login page
+    path('', RedirectView.as_view(url='/login/', permanent=False)),  # <-- ADD THIS
+    
     path("admin/dashboard/", admin_dashboard_view, name="admin-dashboard"),
     path("admin/dashboard/export/<int:wave_id>/", export_wave_csv, name="admin-dashboard-export"),
     path("ckeditor5/", include("django_ckeditor_5.urls")),
