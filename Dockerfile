@@ -1,8 +1,9 @@
+# Force rebuild - 2026-08-14
 FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install build dependencies (for psycopg2 and other packages)
+# Install build dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     libpq-dev \
