@@ -4,15 +4,11 @@ services:
     name: nisr-security-platform
     runtime: python3
     buildCommand: |
-      echo "Installing dependencies..."
       pip install -r backend/requirements.txt
-      echo "Running migrations..."
       cd backend && python manage.py migrate --noinput
-      echo "Collecting static files..."
       cd backend && python manage.py collectstatic --noinput
-      echo "Creating superuser..."
       cd backend && python manage.py createsuperuser --noinput || echo "Superuser creation skipped or already exists"
-    startCommand: cd backend && python -c "import config.settings; print('Settings loaded successfully')" && gunicorn config.wsgi:application --bind 0.0.0.0:10000
+    startCommand: cd backend && gunicorn config.wsgi:application --bind 0.0.0.0:10000
     envVars:
       - key: DJANGO_SECRET_KEY
         sync: false
