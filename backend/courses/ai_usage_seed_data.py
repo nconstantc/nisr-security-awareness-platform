@@ -1,0 +1,328 @@
+"""
+Starter courses on the safe use of AI tools - personal/free and
+corporate. The content is original (not parsed from a mailing, unlike mailing_seed_data.py), but in the same
+format: a list of courses with chapters and questions, where a question's chapter key refers to a
+chapters[].key within that same course.
+"""
+
+PERSONAL_AI_COURSE = {
+    "title": "Reminder on the Safe Use of Personal and Free AI Tools",
+    "description": (
+        "Rules for working with public and free AI services (ChatGPT, Gemini, DeepSeek, "
+        "public AI browser extensions, etc.) on work tasks: what must never be shared with them and how "
+        "to anonymize information before sending it."
+    ),
+    "chapters": [
+        {
+            "key": "general",
+            "title": "General Rules for Working with Personal/Free AI",
+            "content": """
+<p>Public free AI services (ChatGPT, Gemini, DeepSeek, Copilot on a personal account, and
+similar tools) are not part of the Company's information systems - data sent to them leaves
+the company's perimeter, may be stored on the provider's servers, and in some cases may be used
+to further train the models. Assume that anything entered into such a service could become
+available to third parties.</p>
+<h4>Users are prohibited from</h4>
+<ul>
+  <li>Sending confidential information to personal/free AI services: trade secrets,
+  customer and employee personal data, financial reports, contracts, or internal
+  correspondence.</li>
+  <li>Including passwords, access keys (API keys), tokens, or multi-factor
+  authentication codes in a conversation with an AI.</li>
+  <li>Using a personal AI service account to perform work tasks involving the Company's
+  data instead of approved corporate tools.</li>
+  <li>Installing AI browser extensions and plugins with broad access permissions (to page
+  content, the clipboard, files) without approval from the Information Security Department -
+  such an extension can be a channel for data leaks.</li>
+</ul>
+<h4>Users must</h4>
+<ul>
+  <li>Before submitting a request to a public AI service - anonymize the information: replace
+  real names, account numbers, addresses, IP addresses, and system names with placeholder values, if
+  the request requires sending such data at all.</li>
+  <li>Check the AI's output before using it - models can "hallucinate" and produce
+  incorrect but plausible-sounding information.</li>
+  <li>Report to the Information Security Department (<strong>soc@example.com</strong>) any cases
+  where an AI service requests unusually broad permissions or behaves suspiciously.</li>
+</ul>
+""",
+        },
+        {
+            "key": "it",
+            "title": "Using AI in IT and Administration",
+            "content": """
+<p>When working with infrastructure, the temptation to "just ask the AI" for a ready-made command or an error
+diagnosis is especially strong - which is exactly why real internal data most often ends up
+in logs, configurations, and scripts sent to AI tools.</p>
+<h4>Users are prohibited from</h4>
+<ul>
+  <li>Pasting configuration files, logs, and raw command output "as is" into a public AI service - they
+  often contain real IP addresses, hostnames, logins, software versions, and details of the internal network structure.</li>
+  <li>Asking an AI to generate a script or configuration containing real credentials,
+  internal domain names, or the Company's server addresses.</li>
+  <li>Uploading network topology diagrams or infrastructure descriptions to AI services - for
+  an attacker, this is a ready-made reconnaissance map.</li>
+</ul>
+<h4>Users must</h4>
+<ul>
+  <li>Anonymize logs and configurations before sending them to an AI: replace real IPs, hostnames,
+  logins, and domains with placeholder values (for example, 10.0.0.1 → &lt;IP&gt;, server-prod-01 →
+  &lt;hostname&gt;).</li>
+  <li>Use only approved corporate tools, not personal AI accounts, for tasks involving
+  real infrastructure data.</li>
+</ul>
+""",
+        },
+        {
+            "key": "coding",
+            "title": "Using AI in Software Development (Coding)",
+            "content": """
+<p>AI development assistants (chatbots, free/personal-mode code autocomplete assistants)
+are convenient, but the Company's source code and product logic are also confidential
+information.</p>
+<h4>Users are prohibited from</h4>
+<ul>
+  <li>Sending the source code of proprietary systems, internal algorithms, or the Company's
+  business logic to public AI services without approval.</li>
+  <li>Including real database connection strings, passwords, API keys, or
+  other secrets embedded in code in a request to an AI.</li>
+  <li>Blindly copying code suggested by an AI into a production codebase without review.</li>
+</ul>
+<h4>Users must</h4>
+<ul>
+  <li>Check AI-suggested code for vulnerabilities and hidden bugs before including it in
+  a project - AI-generated code is not automatically safe or correct.</li>
+  <li>Consider licensing risks: code generated by an AI may have been trained on copyrighted
+  code - when in doubt, check with your manager or the legal department.</li>
+  <li>Use only approved corporate AI tools covered by an appropriate data-processing agreement,
+  rather than free personal accounts, when working with the Company's real code.</li>
+</ul>
+""",
+        },
+    ],
+    "questions": [
+        # general
+        {
+            "chapter": "general",
+            "text": "Is it allowed to send the Company's confidential information (trade secrets, personal data) to a free public AI service?",
+            "type": "single",
+            "choices": [
+                ("Yes, if it speeds up the work", False),
+                ("No, this is prohibited", True),
+                ("Allowed if the data doesn't concern customers", False),
+                ("Allowed with a coworker's verbal consent", False),
+            ],
+        },
+        {
+            "chapter": "general",
+            "text": "What should be done to data before submitting a request to a public AI service, if the request requires using real data at all?",
+            "type": "single",
+            "choices": [
+                ("Send it as is, AI doesn't store data", False),
+                ("Anonymize it - replace real names, numbers, and addresses with placeholder values", True),
+                ("Shorten the text, but leave the data as is", False),
+                ("Send only part of the data unchanged", False),
+            ],
+        },
+        {
+            "chapter": "general",
+            "text": "Why shouldn't passwords and API keys be included in a conversation with a public AI service?",
+            "type": "single",
+            "choices": [
+                ("It's fine - AI services specifically encrypt such data", False),
+                ("Data sent to them leaves the company's perimeter and can be stored or compromised", True),
+                ("It doesn't matter if the account is password-protected", False),
+                ("This only applies to privileged accounts", False),
+            ],
+        },
+        {
+            "chapter": "general",
+            "text": "Is it allowed to install AI browser extensions with broad access permissions without approval from InfoSec?",
+            "type": "single",
+            "choices": [
+                ("Yes, if the extension is popular", False),
+                ("No, such extensions can be a channel for data leaks", True),
+                ("Allowed on personal devices", False),
+                ("Allowed if the extension is free", False),
+            ],
+        },
+        {
+            "chapter": "general",
+            "text": "Can you fully trust an AI service's output and use it without checking it?",
+            "type": "single",
+            "choices": [
+                ("Yes, modern models don't make mistakes", False),
+                ("No, an AI can produce incorrect but plausible-sounding information - the output must be checked", True),
+                ("Yes, if the question was clearly worded", False),
+                ("Checking is only needed for financial calculations", False),
+            ],
+        },
+        # it
+        {
+            "chapter": "it",
+            "text": "Is it allowed to paste a log file or raw command output \"as is\" into a public AI service to help diagnose an error?",
+            "type": "single",
+            "choices": [
+                ("Yes, logs don't contain sensitive information", False),
+                ("No, logs often contain real IPs, hostnames, and logins - they must be anonymized", True),
+                ("Allowed if the problem is urgent", False),
+                ("Allowed only for test servers", False),
+            ],
+        },
+        {
+            "chapter": "it",
+            "text": "What should be done to a server configuration before showing it to an AI service for diagnostic help?",
+            "type": "single",
+            "choices": [
+                ("Nothing, the configuration can be shared as is", False),
+                ("Replace real IP addresses, hostnames, and logins with placeholder values", True),
+                ("Remove only the passwords, leave the rest", False),
+                ("Trim the file down to five lines", False),
+            ],
+        },
+        {
+            "chapter": "it",
+            "text": "Why is it risky to upload internal network topology diagrams to a public AI service?",
+            "type": "single",
+            "choices": [
+                ("It isn't risky, diagrams don't contain data", False),
+                ("If leaked, it's ready-made reconnaissance information for an attacker", True),
+                ("It's only risky for diagrams with more than 10 nodes", False),
+                ("It just puts extra load on the AI service", False),
+            ],
+        },
+        # coding
+        {
+            "chapter": "coding",
+            "text": "Is it allowed to send the source code of the Company's proprietary systems to a public AI service without approval?",
+            "type": "single",
+            "choices": [
+                ("Yes, if the code is small", False),
+                ("No, this is prohibited without approval", True),
+                ("Allowed if it's open-source code on GitHub", False),
+                ("Allowed if the AI is a paid service", False),
+            ],
+        },
+        {
+            "chapter": "coding",
+            "text": "Does code suggested by an AI assistant need to be reviewed before being added to a production codebase?",
+            "type": "single",
+            "choices": [
+                ("No, AI-generated code is always safe and correct", False),
+                ("Yes, code must be checked for vulnerabilities and bugs before use", True),
+                ("Review is only needed for Python code", False),
+                ("Review is only needed if the code is longer than 50 lines", False),
+            ],
+        },
+        {
+            "chapter": "coding",
+            "text": "What should be done with database connection strings and other secrets when writing a code-related request to an AI?",
+            "type": "single",
+            "choices": [
+                ("Include them as is, so the AI understands the context", False),
+                ("Do not include real secrets in the request to the AI", True),
+                ("Include only part of the password", False),
+                ("It doesn't matter for private AI services", False),
+            ],
+        },
+    ],
+}
+
+CORPORATE_AI_COURSE = {
+    "title": "Reminder on Working with Corporate AI",
+    "description": (
+        "Rules for using AI tools officially approved by the Company - work tasks involving "
+        "the Company's data must use these tools rather than personal accounts, but the rules "
+        "on minimizing the data shared still apply even here."
+    ),
+    "chapters": [
+        {
+            "key": "main",
+            "title": "Working with Corporate AI",
+            "content": """
+<p>For work tasks that require processing the Company's data, only officially
+approved ("corporate") AI tools may be used - unlike free public services, these
+have a data-processing agreement in place and/or are deployed inside the Company's perimeter.
+This does not remove the need to follow basic information security rules.</p>
+<h4>Users are prohibited from</h4>
+<ul>
+  <li>Using any AI tool other than an officially approved corporate one for work tasks
+  involving the Company's data.</li>
+  <li>Sending even a corporate AI more data than is necessary for the specific task -
+  the minimization rule always applies, regardless of how much the tool is trusted.</li>
+  <li>Sharing credentials or an API access key for a corporate AI with third parties, including
+  coworkers who lack the appropriate access.</li>
+  <li>Disabling or bypassing a corporate AI tool's built-in monitoring, logging, or filtering
+  controls.</li>
+</ul>
+<h4>Users must</h4>
+<ul>
+  <li>Use corporate AI strictly within the scope of their job duties.</li>
+  <li>Check the AI's output before making decisions based on it - as with any
+  AI tool, mistakes and inaccuracies are possible.</li>
+  <li>Report to the Information Security Department (<strong>soc@example.com</strong>) any
+  suspicious behavior by a corporate AI tool, or any request from it for unusual permissions.</li>
+</ul>
+""",
+        },
+    ],
+    "questions": [
+        {
+            "chapter": "main",
+            "text": "Which AI tool should be used for a work task that requires processing the Company's data?",
+            "type": "single",
+            "choices": [
+                ("Any convenient one, including personal free accounts", False),
+                ("Only an officially approved corporate AI tool", True),
+                ("Any AI tool, if the task isn't urgent", False),
+                ("A personal AI tool, if it's faster", False),
+            ],
+        },
+        {
+            "chapter": "main",
+            "text": "Does the data-minimization rule (\"don't share more than the task requires\") apply when working with corporate AI?",
+            "type": "single",
+            "choices": [
+                ("No, any amount of data can be sent to corporate AI without restriction", False),
+                ("Yes, the minimization rule always applies, regardless of how much the tool is trusted", True),
+                ("The rule only applies to external AI services", False),
+                ("The rule only applies on Fridays", False),
+            ],
+        },
+        {
+            "chapter": "main",
+            "text": "Is it allowed to share your account or API access key for corporate AI with a coworker who lacks the appropriate access?",
+            "type": "single",
+            "choices": [
+                ("Yes, if the coworker is from the same department", False),
+                ("No, this is prohibited", True),
+                ("Allowed for one workday", False),
+                ("Allowed with a manager's verbal permission", False),
+            ],
+        },
+        {
+            "chapter": "main",
+            "text": "What should you do if you notice suspicious behavior from a corporate AI tool (for example, it requests unusual permissions)?",
+            "type": "single",
+            "choices": [
+                ("Ignore it, it's a technical quirk", False),
+                ("Report it to the Information Security Department", True),
+                ("Disable the tool's logging yourself", False),
+                ("Report it a month later at a meeting", False),
+            ],
+        },
+        {
+            "chapter": "main",
+            "text": "Should the output of a corporate AI be checked before making work decisions based on it?",
+            "type": "single",
+            "choices": [
+                ("No, corporate AI never makes mistakes by definition", False),
+                ("Yes, the output should be checked - mistakes are possible with any AI tool", True),
+                ("Checking is only needed for financial decisions", False),
+                ("Checking is only needed during the first month of use", False),
+            ],
+        },
+    ],
+}
+
+COURSES = [PERSONAL_AI_COURSE, CORPORATE_AI_COURSE]

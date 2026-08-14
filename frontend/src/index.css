@@ -1,0 +1,313 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ========================================
+   NISR BRAND COLORS
+   ======================================== */
+
+:root {
+  /* NISR Brand Colors */
+  --nisr-dark: #1a2a6c;
+  --nisr-blue: #4a90d9;
+  --nisr-blue-light: #6ba3e0;
+  --nisr-white: #ffffff;
+  
+  /* Primary Colors */
+  --primary: #1a2a6c;
+  --primary-light: #4a90d9;
+  --primary-dark: #0f1a4a;
+  
+  /* Secondary Colors */
+  --secondary: #4a90d9;
+  --accent: #6ba3e0;
+  --accent-light: #a8c8f0;
+}
+
+.dark {
+  --primary: #4a90d9;
+  --primary-dark: #1a2a6c;
+  --secondary: #6ba3e0;
+}
+
+/* ========================================
+   NISR CUSTOM UTILITY CLASSES
+   ======================================== */
+
+/* NISR Background Colors */
+.bg-nisr-dark {
+  background-color: #1a2a6c;
+}
+.bg-nisr-blue {
+  background-color: #4a90d9;
+}
+.bg-nisr-blue-light {
+  background-color: #6ba3e0;
+}
+.bg-nisr-white {
+  background-color: #ffffff;
+}
+
+/* NISR Text Colors */
+.text-nisr-dark {
+  color: #1a2a6c;
+}
+.text-nisr-blue {
+  color: #4a90d9;
+}
+.text-nisr-white {
+  color: #ffffff;
+}
+
+/* NISR Border Colors */
+.border-nisr-dark {
+  border-color: #1a2a6c;
+}
+.border-nisr-blue {
+  border-color: #4a90d9;
+}
+
+/* NISR Hover States */
+.hover\:bg-nisr-dark:hover {
+  background-color: #1a2a6c;
+}
+.hover\:bg-nisr-blue:hover {
+  background-color: #4a90d9;
+}
+.hover\:text-nisr-blue:hover {
+  color: #4a90d9;
+}
+
+/* NISR Button Styles */
+.btn-nisr-primary {
+  background-color: #1a2a6c;
+  color: #ffffff;
+}
+.btn-nisr-primary:hover {
+  background-color: #0f1a4a;
+}
+
+.btn-nisr-secondary {
+  background-color: #4a90d9;
+  color: #ffffff;
+}
+.btn-nisr-secondary:hover {
+  background-color: #2b7bc9;
+}
+
+/* NISR Link Styles */
+.link-nisr {
+  color: #4a90d9;
+}
+.link-nisr:hover {
+  color: #1a2a6c;
+}
+
+/* ========================================
+   OVERRIDE TAILWIND BLUE COLORS
+   ======================================== */
+
+.bg-blue-50 {
+  background-color: #e8f0fe !important;
+}
+.bg-blue-100 {
+  background-color: #d1e3fc !important;
+}
+.bg-blue-200 {
+  background-color: #a3c7f9 !important;
+}
+.bg-blue-300 {
+  background-color: #6ba3e0 !important;
+}
+.bg-blue-400 {
+  background-color: #4a90d9 !important;
+}
+.bg-blue-500 {
+  background-color: #2b7bc9 !important;
+}
+.bg-blue-600 {
+  background-color: #1a2a6c !important;
+}
+.bg-blue-700 {
+  background-color: #0f1a4a !important;
+}
+.bg-blue-800 {
+  background-color: #0a122f !important;
+}
+.bg-blue-900 {
+  background-color: #05081a !important;
+}
+
+.text-blue-50 {
+  color: #e8f0fe !important;
+}
+.text-blue-100 {
+  color: #d1e3fc !important;
+}
+.text-blue-200 {
+  color: #a3c7f9 !important;
+}
+.text-blue-300 {
+  color: #6ba3e0 !important;
+}
+.text-blue-400 {
+  color: #4a90d9 !important;
+}
+.text-blue-500 {
+  color: #2b7bc9 !important;
+}
+.text-blue-600 {
+  color: #1a2a6c !important;
+}
+.text-blue-700 {
+  color: #0f1a4a !important;
+}
+.text-blue-800 {
+  color: #0a122f !important;
+}
+.text-blue-900 {
+  color: #05081a !important;
+}
+
+.border-blue-200 {
+  border-color: #a3c7f9 !important;
+}
+.border-blue-300 {
+  border-color: #6ba3e0 !important;
+}
+.border-blue-500 {
+  border-color: #2b7bc9 !important;
+}
+.border-blue-600 {
+  border-color: #1a2a6c !important;
+}
+
+.hover\:bg-blue-50:hover {
+  background-color: #e8f0fe !important;
+}
+.hover\:bg-blue-100:hover {
+  background-color: #d1e3fc !important;
+}
+.hover\:bg-blue-200:hover {
+  background-color: #a3c7f9 !important;
+}
+.hover\:bg-blue-300:hover {
+  background-color: #6ba3e0 !important;
+}
+.hover\:bg-blue-400:hover {
+  background-color: #4a90d9 !important;
+}
+.hover\:bg-blue-500:hover {
+  background-color: #2b7bc9 !important;
+}
+.hover\:bg-blue-600:hover {
+  background-color: #1a2a6c !important;
+}
+.hover\:bg-blue-700:hover {
+  background-color: #0f1a4a !important;
+}
+
+.hover\:text-blue-600:hover {
+  color: #1a2a6c !important;
+}
+.hover\:text-blue-700:hover {
+  color: #0f1a4a !important;
+}
+
+/* ========================================
+   BODY STYLES
+   ======================================== */
+
+body {
+  margin: 0;
+  font-family: system-ui, "Segoe UI", Roboto, sans-serif;
+  background: #f8fafc;
+  color: #111827;
+}
+
+.dark body {
+  background: #0f172a;
+  color: #e2e8f0;
+}
+
+/* ========================================
+   CHAPTER CONTENT STYLES
+   ======================================== */
+
+.chapter-content h2 {
+  font-weight: 700;
+  font-size: 1.25em;
+  margin: 1.4em 0 0.6em;
+  color: #1e293b;
+}
+.chapter-content h3 {
+  font-weight: 600;
+  font-size: 1.1em;
+  margin: 1.3em 0 0.5em;
+  color: #1e293b;
+}
+.chapter-content h4 {
+  font-weight: 600;
+  margin: 1.25em 0 0.5em;
+  color: #1e293b;
+}
+.chapter-content p {
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+.chapter-content ul {
+  list-style: disc;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.chapter-content ol {
+  list-style: decimal;
+  padding-left: 1.5em;
+  margin: 0.5em 0;
+}
+.chapter-content li {
+  margin: 0.35em 0;
+  line-height: 1.5;
+}
+.chapter-content strong {
+  color: #1e293b;
+}
+.chapter-content code {
+  background: #f1f5f9;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  font-size: 0.9em;
+}
+.chapter-content blockquote {
+  border-left: 3px solid #cbd5e1;
+  padding-left: 1em;
+  margin: 0.75em 0;
+  color: #475569;
+  font-style: italic;
+}
+.chapter-content a {
+  color: #1a2a6c;
+  text-decoration: underline;
+}
+.chapter-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 0.75em 0;
+}
+
+.dark .chapter-content h2,
+.dark .chapter-content h3,
+.dark .chapter-content h4,
+.dark .chapter-content strong {
+  color: #e2e8f0;
+}
+.dark .chapter-content code {
+  background: #334155;
+}
+.dark .chapter-content blockquote {
+  border-left-color: #475569;
+  color: #94a3b8;
+}
+.dark .chapter-content a {
+  color: #60a5fa;
+}

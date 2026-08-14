@@ -1,0 +1,17 @@
+{% extends "admin/index.html" %}
+
+{% block extrahead %}
+{{ block.super }}
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32-dark.png" />
+<link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+{% endblock %}
+
+{% block content %}
+<div style="margin-bottom:16px">
+  <a href="{% url 'admin-dashboard' %}" class="button">📊 CyberSecurity Training Dashboard</a>
+</div>
+{{ block.super }}
+{% endblock %}

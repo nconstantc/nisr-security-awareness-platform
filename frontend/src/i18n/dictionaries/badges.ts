@@ -1,0 +1,47 @@
+export const badgesEn = {
+  badges: {
+    title: "My badges",
+    subtitle: "Badges earned by completing courses",
+    empty: "You don't have any badges yet - complete a course to earn your first one.",
+    anyCourse: "Any course",
+    copyLink: "Copy link",
+    linkCopied: "Link copied",
+    navLink: "My badges",
+  },
+  consoleBadges: {
+    title: "Badges",
+    subtitle: "Badges employees earn for completing courses",
+    create: "Create badge",
+    name: "Name",
+    description: "Description",
+    icon: "Icon",
+    useCourseIcon: "Use course icon",
+    course: "Course",
+    anyCourse: "— any course —",
+    wave: "Wave (cycle)",
+    anyWave: "— any wave of this course —",
+    waveHint: "For yearly/quarterly awards, pick a specific wave - otherwise the award is granted for any pass of the course, without splitting by cycle.",
+    isActive: "Active",
+    awardedCount: "Awarded",
+    save: "Save",
+    cancel: "Cancel",
+    edit: "Edit",
+    saveFailed: "Failed to save the badge",
+    iconRequired: "Upload a badge icon",
+    settingsTitle: "Privacy",
+    showRealName: "Show the employee's real name on the public confirmation page",
+    showRealNameHint: "When off, the public badge page shows an anonymized label instead of the employee's name.",
+    settingsSaveFailed: "Failed to save settings",
+  },
+  badgeVerification: {
+    loading: "Loading…",
+    notFound: "Badge not found",
+    courseLine: "completed the course “{course}”",
+    genericCourseLine: "completed a training course",
+    anonymizedName: "Company employee",
+    awardedOn: "Awarded on: {date}",
+  },
+};
+
+// Export only English version
+export const badges = badgesEn;
