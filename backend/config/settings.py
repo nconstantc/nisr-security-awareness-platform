@@ -53,6 +53,7 @@ INSTALLED_APPS = [
     "notifications",
     "badges",
     "leaderboard",
+    "phishing",
 ]
 
 MIDDLEWARE = [
@@ -203,3 +204,12 @@ LOGIN_URL = "/admin/login/"
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
+# Email backend for sending real emails
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_USE_SSL = False
+EMAIL_HOST_USER = 'nconstantine521@gmail.com'
+EMAIL_HOST_PASSWORD = 'ednu qivy hfdt nyiz'  # Your app password (with or without spaces)
+DEFAULT_FROM_EMAIL = 'nconstantine521@gmail.com'
