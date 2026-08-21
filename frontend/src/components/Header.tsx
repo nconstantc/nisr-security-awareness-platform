@@ -15,12 +15,25 @@ export function Header({ centerSlot }: { centerSlot?: React.ReactNode }) {
           <img src="/brand/nisr-logo.png" alt="NISR Logo" className="h-8 w-auto" />
           {t("common.appName")}
         </Link>
-        {centerSlot && <div className="flex-1 flex justify-end min-w-0">{centerSlot}</div>}
-        {user && (
-          <ProfileMenu
-            extraLinks={user.is_staff ? [{ to: "/console", label: t("common.adminConsole"), icon: <ShieldIcon /> }] : []}
-          />
-        )}
+        
+        <div className="flex items-center gap-4">
+          {/* Report Suspicious Email Link - using a tag to go to Django template */}
+          {user && (
+            <a
+              href="/phishing/report/"
+              className="text-sm text-slate-600 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 font-medium"
+            >
+              📧 Report Suspicious Email
+            </a>
+          )}
+          
+          {centerSlot && <div className="flex-1 flex justify-end min-w-0">{centerSlot}</div>}
+          {user && (
+            <ProfileMenu
+              extraLinks={user.is_staff ? [{ to: "/console", label: t("common.adminConsole"), icon: <ShieldIcon /> }] : []}
+            />
+          )}
+        </div>
       </div>
     </header>
   );

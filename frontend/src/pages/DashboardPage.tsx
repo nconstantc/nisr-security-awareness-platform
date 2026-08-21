@@ -46,7 +46,7 @@ function Chip({ icon, tone, children }: { icon: React.ReactNode; tone: "red" | "
 
 export function DashboardPage() {
   const { user } = useAuth();
-  const { t } = useTranslation(); // Removed 'language'
+  const { t } = useTranslation();
   const [waves, setWaves] = useState<WaveAssignmentSummary[] | null>(null);
   const [tab, setTab] = useState<Tab>("active");
   const [search, setSearch] = useState("");
@@ -149,6 +149,24 @@ export function DashboardPage() {
             />
           </div>
         </div>
+
+        {/* ===== BADGES LINK - ADD THIS SECTION ===== */}
+        <div className="mb-6 bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-4 flex items-center justify-between">
+          <div className="flex items-center gap-3">
+            <span className="text-2xl">🏅</span>
+            <div>
+              <h3 className="font-medium text-slate-800 dark:text-slate-100">My Badges</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400">View and download your earned badges</p>
+            </div>
+          </div>
+          <Link
+            to="/badges"
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+          >
+            View Badges →
+          </Link>
+        </div>
+        {/* ======================================== */}
 
         <div className="sm:hidden mb-6">{searchBox}</div>
 

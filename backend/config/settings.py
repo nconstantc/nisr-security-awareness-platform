@@ -204,6 +204,11 @@ LOGIN_URL = "/admin/login/"
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
 ]
+
+# ====================================================================
+# EMAIL CONFIGURATION
+# ====================================================================
+
 # Email backend for sending real emails
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
@@ -213,3 +218,21 @@ EMAIL_USE_SSL = False
 EMAIL_HOST_USER = 'nconstantine521@gmail.com'
 EMAIL_HOST_PASSWORD = 'ednu qivy hfdt nyiz'  # Your app password (with or without spaces)
 DEFAULT_FROM_EMAIL = 'nconstantine521@gmail.com'
+
+# ====================================================================
+# FORCE ENGLISH IN DJANGO ADMIN
+# ====================================================================
+
+import os
+os.environ['LANGUAGE_CODE'] = 'en'
+os.environ['LANG'] = 'en_US.UTF-8'
+
+# Override Django's default language
+LANGUAGE_CODE = 'en'
+USE_I18N = True
+USE_L10N = True
+
+# Remove Russian from available languages
+LANGUAGES = [
+    ('en', 'English'),
+]

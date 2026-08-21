@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Report Suspicious Email - NISR Security Platform</title>
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8fafc; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { color: #1a2a6c; }
+        label { display: block; margin-top: 15px; font-weight: bold; }
+        input, textarea { width: 100%; padding: 10px; margin-top: 5px; border: 1px solid #ddd; border-radius: 6px; }
+        .btn { background: #1a2a6c; color: white; padding: 12px 24px; border: none; border-radius: 6px; cursor: pointer; margin-top: 20px; }
+        .btn:hover { background: #0f1a4a; }
+        .info { background: #e8f0fe; padding: 15px; border-radius: 6px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📧 Report Suspicious Email</h1>
+        <div class="info">
+            <p>⚠️ <strong>Do NOT click any links or open attachments</strong> in the suspicious email.</p>
+            <p>📋 Fill in the details below and our security team will investigate.</p>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <label for="sender_email">Sender Email</label>
+            <input type="text" id="sender_email" name="sender_email" placeholder="e.g., security@example.com" required>
+            
+            <label for="subject">Email Subject</label>
+            <input type="text" id="subject" name="subject" placeholder="e.g., Urgent: Account Verification Required" required>
+            
+            <label for="body_preview">Email Body Preview</label>
+            <textarea id="body_preview" name="body_preview" rows="4" placeholder="Paste a preview of the email content..." required></textarea>
+            
+            <label for="reason">Why do you think this is suspicious?</label>
+            <textarea id="reason" name="reason" rows="3" placeholder="e.g., Unexpected email, suspicious sender, urgent request..." required></textarea>
+            
+            <button type="submit" class="btn">🚨 Submit Report</button>
+        </form>
+        
+        <p style="margin-top: 20px;"><a href="/">← Back to Dashboard</a></p>
+    </div>
+</body>
+</html>

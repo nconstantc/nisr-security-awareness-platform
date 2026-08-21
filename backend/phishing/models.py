@@ -19,6 +19,9 @@ class PhishingTemplate(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-created_at']
+
 
 class PhishingCampaign(models.Model):
     """Phishing simulation campaign"""
@@ -69,6 +72,8 @@ class PhishingCampaign(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['-created_at']
 
 
 class PhishingResult(models.Model):
@@ -112,3 +117,42 @@ class PhishingResult(models.Model):
 
     class Meta:
         unique_together = ['campaign', 'employee']
+
+
+class PhishingReport(models.Model):
+    """Employee report of suspicious email"""
+    STATUS_CHOICES = [
+        ('pending', 'Pending Review'),
+        ('investigating', 'Under Investigation'),
+        ('confirmed_phishing', 'Confirmed Phishing'),
+        ('false_positive', 'False Positive'),
+        ('resolved', 'Resolved'),
+    ]
+    
+    employee = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name="phishing_reports"
+    )
+    sender_email = models.CharField("Sender Email", max_length=255)
+    subject = models.CharField("Email Subject", max_length=255)
+    body_preview = models.TextField("Email Body Preview", blank=True)
+    reason = models.TextField("Why do you think this is suspicious?")
+    status = models.CharField("Status", max_length=20, choices=STATUS_CHOICES, default='pending')
+    reported_at = models.DateTimeField(auto_now_add=True)
+    reviewed_at = models.DateTimeField(null=True, blank=True)
+    reviewed_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="reviewed_reports"
+    )
+    notes = models.TextField("Admin Notes", blank=True)
+    is_phishing = models.BooleanField("Was this actually phishing?", null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.employee.email} - {self.subject} - {self.status}"
+
+    class Meta:
+        ordering = ['-reported_at']

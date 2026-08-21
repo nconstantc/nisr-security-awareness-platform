@@ -21,6 +21,10 @@ export function BadgesPage() {
     setTimeout(() => setCopiedId((id) => (id === badge.id ? null : id)), 2000);
   }
 
+  const handleDownload = (badgeId: number) => {
+  window.open(`/api/download/${badgeId}/`, '_blank');
+};
+
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-900">
       <Header />
@@ -39,12 +43,20 @@ export function BadgesPage() {
               <h2 className="font-medium text-slate-800 dark:text-slate-100">{b.badge_name}</h2>
               <p className="text-xs text-slate-500 dark:text-slate-400">{b.course_title ?? t("badges.anyCourse")}</p>
               <p className="text-xs text-slate-400 dark:text-slate-500">{formatDate(b.awarded_at)}</p>
-              <button
-                onClick={() => copyLink(b)}
-                className="mt-2 text-xs px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600"
-              >
-                {copiedId === b.id ? t("badges.linkCopied") : t("badges.copyLink")}
-              </button>
+              <div className="flex flex-wrap gap-2 mt-2">
+                <button
+                  onClick={() => copyLink(b)}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-600"
+                >
+                  {copiedId === b.id ? t("badges.linkCopied") : t("badges.copyLink")}
+                </button>
+                <button
+                  onClick={() => handleDownload(b.id)}
+                  className="text-xs px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white"
+                >
+                  📥 Download Certificate
+                </button>
+              </div>
             </div>
           ))}
         </div>
