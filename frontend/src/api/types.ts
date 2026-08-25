@@ -33,6 +33,7 @@ export interface Chapter {
   order: number;
   title: string;
   content: string;
+  pdf_file?: string | null;  // <-- ADDED
 }
 
 export interface CourseDetail {

@@ -11,7 +11,7 @@ class ChoiceAdminSerializer(serializers.ModelSerializer):
 
 
 class QuestionAdminSerializer(serializers.ModelSerializer):
-    """Вопрос + варианты одним запросом - вложенные choices пересоздаются целиком при сохранении."""
+    """Question + choices in one request - nested choices are recreated entirely on save."""
 
     choices = ChoiceAdminSerializer(many=True)
 
@@ -51,7 +51,7 @@ class ChapterAdminSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Chapter
-        fields = ["id", "course", "order", "title", "content", "question_count"]
+        fields = ["id", "course", "order", "title", "content", "pdf_file", "question_count"]  # <-- ADDED pdf_file
 
     def validate_content(self, value):
         return sanitize_chapter_content(value)
@@ -69,7 +69,7 @@ class CourseAdminSerializer(serializers.ModelSerializer):
 
 
 class CourseDetailAdminSerializer(CourseAdminSerializer):
-    """Курс + все главы (с вопросами) одним запросом - для страницы редактирования курса в консоли."""
+    """Course + all chapters (with questions) in one request - for the course edit page in the console."""
 
     chapters = serializers.SerializerMethodField()
 

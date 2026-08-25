@@ -6,7 +6,7 @@ from .models import Chapter, Course
 class ChapterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Chapter
-        fields = ["id", "order", "title", "content"]
+        fields = ["id", "order", "title", "content", "pdf_file"]  # <-- ADD pdf_file
 
 
 class CourseDetailSerializer(serializers.ModelSerializer):

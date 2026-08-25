@@ -34,6 +34,7 @@ export interface ConsoleChapter {
   order: number;
   title: string;
   content: string;
+  pdf_file?: string | null;   // <-- ADDED
   question_count: number;
   questions?: ConsoleQuestion[];
 }

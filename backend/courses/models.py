@@ -31,6 +31,13 @@ class Chapter(models.Model):
     order = models.PositiveIntegerField("Order", default=0)
     title = models.CharField("Title", max_length=255)
     content = CKEditor5Field("Content", config_name="default", blank=True, default="")
+    pdf_file = models.FileField(
+        "PDF Document",
+        upload_to="chapters/pdfs/",
+        blank=True,
+        null=True,
+        help_text="Upload a PDF document related to this chapter"
+    )
 
     class Meta:
         verbose_name = "Chapter"

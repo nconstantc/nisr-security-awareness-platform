@@ -12,6 +12,7 @@ interface ChapterWithQuestions {
   order: number;
   title: string;
   content: string;
+  pdf_file?: string | null;  // <-- ADD THIS
   questions: AttemptQuestion[];
 }
 
@@ -354,6 +355,24 @@ function ChapterContent({
           <span className="text-xs uppercase tracking-wide text-slate-400 dark:text-slate-500">{t("course.chapterLabel", { number: index + 1 })}</span>
           <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-100 mb-3">{chapter.title}</h2>
           <div className="chapter-content text-slate-700 dark:text-slate-200" dangerouslySetInnerHTML={{ __html: chapter.content }} />
+
+          {/* ====== PDF DISPLAY ====== */}
+          {chapter.pdf_file && (
+            <div className="mt-4 p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <a
+                href={chapter.pdf_file}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-blue-600 hover:underline dark:text-blue-400"
+              >
+                <span className="text-lg">📄</span>
+                <span>Download Course PDF</span>
+              </a>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                Click to view or download the PDF document related to this chapter.
+              </p>
+            </div>
+          )}
         </div>
       </div>
 

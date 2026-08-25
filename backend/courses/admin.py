@@ -6,7 +6,7 @@ from .models import Chapter, Choice, Course, Question
 class ChapterInline(admin.StackedInline):
     model = Chapter
     extra = 0
-    fields = ("order", "title", "content")
+    fields = ("order", "title", "content", "pdf_file")  # <-- ADDED pdf_file
     show_change_link = True
 
 
@@ -28,16 +28,20 @@ class CourseAdmin(admin.ModelAdmin):
 
 @admin.register(Chapter)
 class ChapterAdmin(admin.ModelAdmin):
-    """Отдельная полноэкранная страница редактирования главы - удобнее, чем инлайн на курсе."""
+    """Separate full-screen chapter edit page - more convenient than inline on the course."""
 
-    list_display = ("title", "course", "order", "question_count")
+    list_display = ("title", "course", "order", "question_count", "has_pdf")  # <-- ADDED has_pdf
     list_filter = ("course",)
     search_fields = ("title", "content")
-    fields = ("course", "order", "title", "content")
+    fields = ("course", "order", "title", "content", "pdf_file")  # <-- ADDED pdf_file
 
     @admin.display(description="Questions")
     def question_count(self, obj):
         return obj.questions.count()
+
+    @admin.display(description="PDF", boolean=True)  # <-- NEW
+    def has_pdf(self, obj):
+        return bool(obj.pdf_file)
 
 
 class ChoiceInline(admin.TabularInline):

@@ -30,6 +30,7 @@ export function ConsoleCourseEditPage() {
   const [courseDescriptionDraft, setCourseDescriptionDraft] = useState("");
   const [editingContentFor, setEditingContentFor] = useState<number | null>(null);
   const [chapterTitleDraft, setChapterTitleDraft] = useState("");
+  const [uploadingPdf, setUploadingPdf] = useState<number | null>(null);
 
   function reload() {
     api.get<ConsoleCourseDetail>(`/api/console/courses/${courseId}/`).then(setCourse);
@@ -121,6 +122,21 @@ export function ConsoleCourseEditPage() {
   async function handleToggleQuestionActive(question: ConsoleQuestion) {
     await api.patch(`/api/console/questions/${question.id}/`, { is_active: !question.is_active });
     reload();
+  }
+
+  async function handleUploadPdf(chapterId: number, file: File) {
+    setUploadingPdf(chapterId);
+    try {
+      const formData = new FormData();
+      formData.append('pdf_file', file);
+      await api.postForm(`/api/console/chapters/${chapterId}/upload-pdf/`, formData);
+      reload();
+    } catch (error) {
+      console.error('Failed to upload PDF:', error);
+      alert('Failed to upload PDF. Please try again.');
+    } finally {
+      setUploadingPdf(null);
+    }
   }
 
   if (!course) return <p className="text-slate-500 dark:text-slate-400">{t("consoleCourseEdit.loading")}</p>;
@@ -256,6 +272,54 @@ export function ConsoleCourseEditPage() {
                   <TrashIcon />
                 </button>
               </div>
+            </div>
+
+            {/* ====== PDF UPLOAD SECTION ====== */}
+            <div className="mb-4 p-3 bg-slate-50 dark:bg-slate-700/30 rounded-lg border border-slate-200 dark:border-slate-700">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                PDF Document (Optional)
+              </label>
+              <div className="flex items-center gap-3 mt-1">
+                <input
+                  type="file"
+                  accept=".pdf"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file && chapter.id) {
+                      handleUploadPdf(chapter.id, file);
+                    }
+                    e.target.value = '';
+                  }}
+                  disabled={uploadingPdf === chapter.id}
+                  className="text-sm text-slate-500 dark:text-slate-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-medium file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900/30 dark:file:text-blue-300"
+                />
+                {uploadingPdf === chapter.id && (
+                  <span className="text-sm text-blue-600 dark:text-blue-400 animate-pulse">Uploading...</span>
+                )}
+                {chapter.pdf_file && (
+                  <a
+                    href={chapter.pdf_file}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-blue-600 hover:underline dark:text-blue-400 flex items-center gap-1"
+                  >
+                    📄 View PDF
+                  </a>
+                )}
+              </div>
+              {chapter.pdf_file && (
+                <button
+                  onClick={async () => {
+                    if (confirm('Remove this PDF from the chapter?')) {
+                      await api.patch(`/api/console/chapters/${chapter.id}/`, { pdf_file: null });
+                      reload();
+                    }
+                  }}
+                  className="text-xs text-red-600 hover:underline dark:text-red-400 mt-1"
+                >
+                  Remove PDF
+                </button>
+              )}
             </div>
 
             {editingContentFor === chapter.id && (
