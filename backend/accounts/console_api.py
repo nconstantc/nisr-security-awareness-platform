@@ -17,15 +17,21 @@ from .permissions import IsSuperAdmin
 from .services import reset_user_password
 
 
-class DepartmentListView(generics.ListAPIView):
-    """Только чтение - заводить отделы/сотрудников остается задачей Django Admin (там же CSV-импорт)."""
-
+class DepartmentListView(generics.ListCreateAPIView):
+    """List and create departments"""
     queryset = Department.objects.all().order_by("name")
     serializer_class = DepartmentAdminSerializer
     permission_classes = [IsAdminUser]
 
 
-class EmployeeListView(generics.ListAPIView):
+class DepartmentDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieve, update, and delete a department"""
+    queryset = Department.objects.all().order_by("name")
+    serializer_class = DepartmentAdminSerializer
+    permission_classes = [IsAdminUser]
+
+
+class EmployeeListView(generics.ListCreateAPIView):
     serializer_class = EmployeeAdminSerializer
     permission_classes = [IsAdminUser]
 
@@ -36,10 +42,13 @@ class EmployeeListView(generics.ListAPIView):
             qs = qs.filter(full_name__icontains=search)
         return qs
 
+    def create(self, request, *args, **kwargs):
+        # Add any custom logic for creating employees if needed
+        return super().create(request, *args, **kwargs)
+
 
 class EmployeeResetPasswordView(APIView):
-    """Тот же сброс, что и действие в Django Admin, но для консоли администратора."""
-
+    """Reset employee password"""
     permission_classes = [IsSuperAdmin]
 
     def post(self, request, pk):
@@ -49,9 +58,7 @@ class EmployeeResetPasswordView(APIView):
 
 
 class EmployeeRoleView(APIView):
-    """Смена роли сотрудника (сотрудник/менеджер/администратор) - только для полных
-    администраторов, иначе менеджер мог бы выдать себе или кому-то права администратора."""
-
+    """Change employee role"""
     permission_classes = [IsSuperAdmin]
 
     def patch(self, request, pk):
@@ -68,9 +75,7 @@ class EmployeeRoleView(APIView):
 
 
 class LdapSettingsView(APIView):
-    """Единственная запись настроек AD/LDAP - читается/правится из консоли, применяется без
-    рестарта (accounts/ldap_backend.py строит конфиг из нее при каждом входе)."""
-
+    """LDAP/AD settings"""
     permission_classes = [IsSuperAdmin]
 
     def get(self, request):
@@ -85,9 +90,7 @@ class LdapSettingsView(APIView):
 
 
 class LdapTestConnectionView(APIView):
-    """Пробует bind с переданными (еще не обязательно сохраненными) параметрами, чтобы можно
-    было проверить подключение к домену перед тем, как сохранять и включать LDAP для всех."""
-
+    """Test LDAP connection"""
     permission_classes = [IsSuperAdmin]
 
     def post(self, request):
@@ -99,8 +102,6 @@ class LdapTestConnectionView(APIView):
         start_tls = bool(request.data.get("start_tls"))
 
         if not bind_password:
-            # Пароль не перепечатывают каждый раз - если поле пустое, но bind_dn совпадает с уже
-            # сохраненным, используем сохраненный пароль для проверки.
             saved = LdapSettings.get_solo()
             if saved.bind_dn == bind_dn:
                 bind_password = saved.bind_password
@@ -127,9 +128,7 @@ class LdapTestConnectionView(APIView):
 
 
 class SecuritySettingsView(APIView):
-    """Единственная запись переключателей защиты входа - читается/правится из консоли,
-    применяется сразу (LoginView читает ее при каждой попытке входа)."""
-
+    """Security settings"""
     permission_classes = [IsSuperAdmin]
 
     def get(self, request):
@@ -144,8 +143,7 @@ class SecuritySettingsView(APIView):
 
 
 class LoginAttemptLogListView(mixins.ListModelMixin, viewsets.GenericViewSet):
-    """Последние 200 попыток входа (успешных и нет) - журнал для аудита."""
-
+    """Login attempt log - last 200 entries"""
     queryset = LoginAttemptLog.objects.order_by("-created_at")[:200]
     serializer_class = LoginAttemptLogSerializer
     permission_classes = [IsSuperAdmin]

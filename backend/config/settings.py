@@ -31,7 +31,8 @@ FIELD_ENCRYPTION_KEY = os.environ.get("FIELD_ENCRYPTION_KEY", "")
 
 DEBUG = env_bool("DJANGO_DEBUG", True)
 
-ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,awareness-main-backend-1,backend")
+# ALLOWED_HOSTS - Add your server IP here
+ALLOWED_HOSTS = env_list("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,172.16.0.46,awareness-main-backend-1,backend")
 
 
 INSTALLED_APPS = [
@@ -177,11 +178,11 @@ REST_FRAMEWORK = {
 }
 
 # --- CORS/CSRF: frontend runs on a different dev port (Vite) but same-origin in prod (nginx) ---
-CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173")
+CORS_ALLOWED_ORIGINS = env_list("CORS_ALLOWED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8090,http://127.0.0.1:8090,http://172.16.0.46:8090")
 CORS_ALLOW_CREDENTIALS = True
 
 CSRF_TRUSTED_ORIGINS = env_list(
-    "CSRF_TRUSTED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost,http://127.0.0.1"
+    "CSRF_TRUSTED_ORIGINS", "http://localhost:5173,http://127.0.0.1:5173,http://localhost:8090,http://127.0.0.1:8090,http://172.16.0.46:8090"
 )
 
 SESSION_COOKIE_SAMESITE = "Lax"

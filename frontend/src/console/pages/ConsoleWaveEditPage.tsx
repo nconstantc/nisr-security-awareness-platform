@@ -23,9 +23,24 @@ export function ConsoleWaveEditPage() {
   const [search, setSearch] = useState("");
   const [searchResults, setSearchResults] = useState<ConsoleEmployee[]>([]);
   const [message, setMessage] = useState<string | null>(null);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editData, setEditData] = useState({
+    start_date: "",
+    deadline: "",
+    pass_threshold: 80,
+    max_attempts: null as number | null,
+  });
 
   function reloadWave() {
-    api.get<ConsoleWave>(`/api/console/waves/${waveId}/`).then(setWave);
+    api.get<ConsoleWave>(`/api/console/waves/${waveId}/`).then((data) => {
+      setWave(data);
+      setEditData({
+        start_date: data.start_date || "",
+        deadline: data.deadline || "",
+        pass_threshold: data.pass_threshold || 80,
+        max_attempts: data.max_attempts ?? null,
+      });
+    });
   }
   function reloadAssignments() {
     api.get<ConsoleWaveAssignment[]>(`/api/console/wave-assignments/?wave=${waveId}`).then(setAssignments);
@@ -54,6 +69,24 @@ export function ConsoleWaveEditPage() {
     if (!next) return;
     const updated = await api.post<ConsoleWave>(`/api/console/waves/${wave.id}/set-status/`, { status: next });
     setWave(updated);
+  }
+
+  async function handleSaveEdit() {
+    if (!wave) return;
+    try {
+      const updated = await api.patch<ConsoleWave>(`/api/console/waves/${wave.id}/`, {
+        start_date: editData.start_date,
+        deadline: editData.deadline,
+        pass_threshold: editData.pass_threshold,
+        max_attempts: editData.max_attempts,
+      });
+      setWave(updated);
+      setIsEditing(false);
+      setMessage("Wave updated successfully");
+    } catch (err) {
+      setMessage("Failed to update wave");
+      console.error(err);
+    }
   }
 
   async function handleAssignAll() {
@@ -118,14 +151,92 @@ export function ConsoleWaveEditPage() {
                 {STATUS_ACTION_LABEL[wave.status]}
               </button>
             )}
+            <button
+              onClick={() => setIsEditing(!isEditing)}
+              className="px-3 py-1.5 rounded-lg bg-slate-600 hover:bg-slate-700 text-white text-sm font-medium"
+            >
+              {isEditing ? "Cancel" : "Edit"}
+            </button>
           </div>
         </div>
-        <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-          {t("consoleWaveEdit.courseLabelPrefix")} <strong className="text-slate-700 dark:text-slate-200">{wave.course_title}</strong> · {t("consoleWaveEdit.startLabelPrefix")} {formatDate(wave.start_date)} · {t("consoleWaveEdit.deadlineLabelPrefix")}{" "}
-          {formatDate(wave.deadline)} · {t("consoleWaveEdit.passThresholdLabelPrefix")} {wave.pass_threshold}% · {t("consoleWaveEdit.attemptsLabelPrefix")}{" "}
-          {wave.max_attempts ?? t("consoleWaveEdit.unlimitedAttempts")}
-          {wave.is_overdue && <span className="text-red-600 dark:text-red-400 font-medium"> · {t("consoleWaveEdit.overdue")}</span>}
-        </p>
+
+        {/* Wave Details - View Mode */}
+        {!isEditing && (
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
+            {t("consoleWaveEdit.courseLabelPrefix")} <strong className="text-slate-700 dark:text-slate-200">{wave.course_title}</strong> ·{" "}
+            {t("consoleWaveEdit.startLabelPrefix")} {formatDate(wave.start_date)} ·{" "}
+            {t("consoleWaveEdit.deadlineLabelPrefix")} {formatDate(wave.deadline)} ·{" "}
+            {t("consoleWaveEdit.passThresholdLabelPrefix")} {wave.pass_threshold}% ·{" "}
+            {t("consoleWaveEdit.attemptsLabelPrefix")}{" "}
+            {wave.max_attempts ?? t("consoleWaveEdit.unlimitedAttempts")}
+            {wave.is_overdue && <span className="text-red-600 dark:text-red-400 font-medium"> · {t("consoleWaveEdit.overdue")}</span>}
+          </p>
+        )}
+
+        {/* Wave Details - Edit Mode */}
+        {isEditing && (
+          <div className="mt-4 p-4 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Start Date</label>
+                <input
+                  type="date"
+                  value={editData.start_date}
+                  onChange={(e) => setEditData({ ...editData, start_date: e.target.value })}
+                  className="mt-1 w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-700 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Deadline</label>
+                <input
+                  type="date"
+                  value={editData.deadline}
+                  onChange={(e) => setEditData({ ...editData, deadline: e.target.value })}
+                  className="mt-1 w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-700 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Pass Threshold (%)</label>
+                <input
+                  type="number"
+                  min={1}
+                  max={100}
+                  value={editData.pass_threshold}
+                  onChange={(e) => setEditData({ ...editData, pass_threshold: parseInt(e.target.value) })}
+                  className="mt-1 w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-700 dark:text-slate-100"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Max Attempts (empty = unlimited)</label>
+                <input
+                  type="number"
+                  min={1}
+                  value={editData.max_attempts ?? ""}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setEditData({ ...editData, max_attempts: val === "" ? null : parseInt(val) });
+                  }}
+                  className="mt-1 w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-700 dark:text-slate-100"
+                  placeholder="Unlimited"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-4">
+              <button
+                onClick={handleSaveEdit}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+              >
+                Save Changes
+              </button>
+              <button
+                onClick={() => setIsEditing(false)}
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-sm font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 p-5">
@@ -191,39 +302,39 @@ export function ConsoleWaveEditPage() {
 
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-left">
-            <tr>
-              <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colEmployee")}</th>
-              <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colDepartment")}</th>
-              <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colStatus")}</th>
-              <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colAttempts")}</th>
-              <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colBestScore")}</th>
-              <th></th>
-            </tr>
-          </thead>
-          <tbody>
-            {assignments?.map((a) => (
-              <tr key={a.id} className="border-t border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
-                <td className="px-4 py-2">
-                  <div className="font-medium text-slate-800 dark:text-slate-100">{a.employee_name}</div>
-                  <div className="text-xs text-slate-400">{a.employee_email}</div>
-                </td>
-                <td className="px-4 py-2 text-slate-600 dark:text-slate-300">{a.department ?? "-"}</td>
-                <td className="px-4 py-2">
-                  <StatusBadge status={a.status} overdue={a.is_overdue} />
-                </td>
-                <td className="px-4 py-2 text-slate-600 dark:text-slate-300">{a.attempts_count}</td>
-                <td className="px-4 py-2 text-slate-600 dark:text-slate-300">{a.best_score !== null ? `${a.best_score}%` : "-"}</td>
-                <td className="px-4 py-2 text-right">
-                  <button onClick={() => handleRemove(a.id)} className="text-red-600 dark:text-red-400 hover:underline text-xs">
-                    {t("consoleWaveEdit.remove")}
-                  </button>
-                </td>
+          <table className="w-full text-sm">
+            <thead className="bg-slate-50 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-left">
+              <tr>
+                <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colEmployee")}</th>
+                <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colDepartment")}</th>
+                <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colStatus")}</th>
+                <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colAttempts")}</th>
+                <th className="px-4 py-2 font-medium">{t("consoleWaveEdit.colBestScore")}</th>
+                <th></th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {assignments?.map((a) => (
+                <tr key={a.id} className="border-t border-slate-100 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700">
+                  <td className="px-4 py-2">
+                    <div className="font-medium text-slate-800 dark:text-slate-100">{a.employee_name}</div>
+                    <div className="text-xs text-slate-400">{a.employee_email}</div>
+                  </td>
+                  <td className="px-4 py-2 text-slate-600 dark:text-slate-300">{a.department ?? "-"}</td>
+                  <td className="px-4 py-2">
+                    <StatusBadge status={a.status} overdue={a.is_overdue} />
+                  </td>
+                  <td className="px-4 py-2 text-slate-600 dark:text-slate-300">{a.attempts_count}</td>
+                  <td className="px-4 py-2 text-slate-600 dark:text-slate-300">{a.best_score !== null ? `${a.best_score}%` : "-"}</td>
+                  <td className="px-4 py-2 text-right">
+                    <button onClick={() => handleRemove(a.id)} className="text-red-600 dark:text-red-400 hover:underline text-xs">
+                      {t("consoleWaveEdit.remove")}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
         {assignments?.length === 0 && <p className="p-4 text-slate-500 dark:text-slate-400">{t("consoleWaveEdit.noAssignments")}</p>}
       </div>

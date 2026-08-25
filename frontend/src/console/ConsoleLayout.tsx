@@ -56,14 +56,24 @@ export function ConsoleLayout() {
   const headerPadClass = collapsed ? "px-2" : "px-2 lg:px-5";
 
   const navItems = [
+  
+    // Dashboard
     { to: "/console", label: t("console.nav.dashboard"), end: true, icon: <DashboardIcon /> },
+    
+    // Management Section
+    { to: "/console/departments", label: "Departments", icon: <UsersIcon /> },
+    { to: "/console/employees", label: t("console.nav.employees"), icon: <UsersIcon /> },
+    { to: "/console/courses", label: "Courses", icon: <BookIcon /> },
     { to: "/console/waves", label: t("console.nav.training"), icon: <BookIcon />, forceActive: trainingActive },
+    { to: "/console/badges", label: "Badges", icon: <BookIcon /> },
+    { to: "/console/phishing", label: "Phishing", icon: <ShieldIcon /> },
+    
+    // At-risk Employees
     { to: "/console/problem-employees", label: t("console.nav.problemEmployees"), icon: <AlertTriangleIcon /> },
-    // Employees/Integrations/Notifications - only for a full administrator (is_superuser), not
-    // a training manager: that's role management, channel secrets, and access to others' passwords.
+    
+    // Admin Section - only for superusers
     ...(user.is_superuser
       ? [
-          { to: "/console/employees", label: t("console.nav.employees"), icon: <UsersIcon /> },
           { to: "/console/integrations", label: t("console.nav.integrations"), icon: <LinkIcon /> },
           { to: "/console/notifications", label: t("console.nav.notifications"), icon: <BellIcon /> },
           { to: "/console/security", label: t("console.nav.security"), icon: <ShieldIcon /> },
@@ -77,7 +87,7 @@ export function ConsoleLayout() {
       {/* Below lg - a permanent narrow strip with icons only (not off-canvas, no extra
           tap needed to see the menu); labels are hidden via hidden lg:inline, but available as a title
           (tooltip/long-press). On lg+ it expands into a regular sidebar with labels. */}
-      <aside className={`${widthClass} shrink-0 sticky top-0 h-screen bg-slate-900 dark:bg-slate-950 text-slate-200 flex flex-col relative transition-[width]`}>
+      <aside className={`${widthClass} shrink-0 sticky top-0 h-screen bg-nisr-dark dark:bg-nisr-dark text-slate-200 flex flex-col relative transition-[width]`}>
         <button
           onClick={() => setCollapsed((v) => !v)}
           title={collapsed ? t("console.expandMenu") : t("console.collapseMenu")}
@@ -88,7 +98,7 @@ export function ConsoleLayout() {
         <div className="flex-1 overflow-y-auto flex flex-col">
           <div className="border-b border-slate-800">
             <div className={`${headerPadClass} pt-4 pb-2 flex items-center ${justifyClass} gap-2 min-w-0`}>
-              {/* REPLACED WITH NISR LOGO */}
+              {/* NISR LOGO */}
               <img src="/brand/nisr-logo.png" alt="NISR Logo" className="h-8 w-auto" />
               <span className={`${labelClass} font-semibold text-white truncate`}>{t("console.title")}</span>
             </div>
@@ -110,8 +120,8 @@ export function ConsoleLayout() {
                 className={() =>
                   `flex items-center ${justifyClass} gap-2.5 px-2 lg:px-3 py-2 rounded-lg text-sm ${
                     item.forceActive ?? location.pathname === item.to
-                      ? "bg-blue-600 text-white"
-                      : "text-slate-300 hover:bg-slate-800"
+                      ? "bg-nisr-blue text-white"
+                      : "text-slate-300 hover:bg-nisr-blue/20"
                   }`
                 }
               >

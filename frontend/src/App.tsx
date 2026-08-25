@@ -17,12 +17,14 @@ import { ConsoleCoursesPage } from "./console/pages/ConsoleCoursesPage";
 import { ConsoleCourseEditPage } from "./console/pages/ConsoleCourseEditPage";
 import { ConsoleProblemEmployeesPage } from "./console/pages/ConsoleProblemEmployeesPage";
 import { ConsoleEmployeesPage } from "./console/pages/ConsoleEmployeesPage";
+import { ConsoleDepartmentsPage } from "./console/pages/ConsoleDepartmentsPage"; // ADD THIS
 import { ConsoleIntegrationsPage } from "./console/pages/ConsoleIntegrationsPage";
 import { ConsoleNotificationsPage } from "./console/pages/ConsoleNotificationsPage";
 import { ConsoleSecurityPage } from "./console/pages/ConsoleSecurityPage";
 import { ConsoleLogsPage } from "./console/pages/ConsoleLogsPage";
 import { ConsoleBadgesPage } from "./console/pages/ConsoleBadgesPage";
 import { ConsoleLeaderboardPage } from "./console/pages/ConsoleLeaderboardPage";
+import { ConsolePhishingPage } from "./console/pages/ConsolePhishingPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -104,6 +106,14 @@ function App() {
             </SuperAdminRoute>
           }
         />
+        <Route
+          path="departments"
+          element={
+            <SuperAdminRoute>
+              <ConsoleDepartmentsPage />
+            </SuperAdminRoute>
+          }
+        />
         <Route path="ldap" element={<Navigate to="/console/integrations" replace />} />
         <Route
           path="integrations"
@@ -137,6 +147,11 @@ function App() {
             </SuperAdminRoute>
           }
         />
+        <Route path="phishing" element={
+    <SuperAdminRoute>
+        <ConsolePhishingPage />
+    </SuperAdminRoute>
+} />
         <Route
           path="logs"
           element={

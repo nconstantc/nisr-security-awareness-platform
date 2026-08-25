@@ -41,6 +41,7 @@ urlpatterns = [
     path("api/console/", include("leaderboard.console_urls")),
     path("api/console/", include("quizzes.console_urls")),
     path("phishing/", include("phishing.urls")),
+    path("api/console/phishing/", include("phishing.console_urls")),
 ]
 
 if settings.DEBUG:
