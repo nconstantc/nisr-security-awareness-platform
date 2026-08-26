@@ -7,5 +7,7 @@ urlpatterns = [
     path('campaigns/', console_api.PhishingCampaignListView.as_view(), name='console-phishing-campaigns'),
     path('campaigns/<int:pk>/', console_api.PhishingCampaignDetailView.as_view(), name='console-phishing-campaign-detail'),
     path('results/', console_api.PhishingResultListView.as_view(), name='console-phishing-results'),
+    path('reports/', console_api.PhishingReportListView.as_view(), name='console-phishing-reports'),
+    path('reports/<int:pk>/', console_api.PhishingReportDetailView.as_view(), name='console-phishing-report-detail'),
     path('send/', console_api.send_phishing_campaigns, name='console-phishing-send'),
 ]

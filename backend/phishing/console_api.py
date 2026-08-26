@@ -1,18 +1,17 @@
 from rest_framework import generics, permissions
-from rest_framework.response import Response
-from rest_framework.views import APIView
-from .models import PhishingCampaign, PhishingTemplate, PhishingResult
+from .models import PhishingCampaign, PhishingTemplate, PhishingResult, PhishingReport
 from .serializers import (
     PhishingCampaignSerializer,
     PhishingTemplateSerializer,
-    PhishingResultSerializer
+    PhishingResultSerializer,
+    PhishingReportSerializer
 )
 
 
 class PhishingTemplateListView(generics.ListAPIView):
     """List all phishing templates"""
     permission_classes = [permissions.IsAdminUser]
-    queryset = PhishingTemplate.objects.filter(is_active=True)
+    queryset = PhishingTemplate.objects.all().order_by("-created_at")
     serializer_class = PhishingTemplateSerializer
 
 
@@ -47,20 +46,41 @@ class PhishingResultListView(generics.ListAPIView):
     serializer_class = PhishingResultSerializer
 
 
+class PhishingReportListView(generics.ListAPIView):
+    """List employee phishing reports for Console administrators."""
+    permission_classes = [permissions.IsAdminUser]
+    queryset = PhishingReport.objects.select_related('employee', 'reviewed_by').all().order_by('-reported_at')
+    serializer_class = PhishingReportSerializer
+
+
+class PhishingReportDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """View and review an employee phishing report."""
+    permission_classes = [permissions.IsAdminUser]
+    queryset = PhishingReport.objects.select_related('employee', 'reviewed_by').all()
+    serializer_class = PhishingReportSerializer
+
+    def perform_update(self, serializer):
+        report = serializer.save()
+        review_fields = {'status', 'notes', 'is_phishing'}
+        if review_fields.intersection(self.request.data.keys()):
+            from django.utils import timezone
+            report.reviewed_by = self.request.user
+            report.reviewed_at = timezone.now()
+            report.save(update_fields=['reviewed_by', 'reviewed_at'])
+
+
 # ========== SEND PHISHING EMAILS ENDPOINT ==========
 
+from rest_framework.decorators import api_view, permission_classes
 from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.core.management import call_command
 from io import StringIO
 
 
-@csrf_exempt
+@api_view(["POST"])
+@permission_classes([permissions.IsAdminUser])
 def send_phishing_campaigns(request):
     """Trigger the send_phishing management command"""
-    if request.method != 'POST':
-        return JsonResponse({'error': 'POST method required'}, status=405)
-    
     try:
         out = StringIO()
         call_command('send_phishing', stdout=out)
