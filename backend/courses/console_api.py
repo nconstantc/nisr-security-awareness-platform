@@ -2,7 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from rest_framework.parsers import MultiPartParser, FormParser
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 
 from .console_serializers import ChapterAdminSerializer, CourseAdminSerializer, CourseDetailAdminSerializer, QuestionAdminSerializer
 from .models import Chapter, Course, Question
@@ -19,7 +19,7 @@ class CourseAdminViewSet(viewsets.ModelViewSet):
 class ChapterAdminViewSet(viewsets.ModelViewSet):
     serializer_class = ChapterAdminSerializer
     permission_classes = [IsAdminUser]
-    parser_classes = [MultiPartParser, FormParser]  # For file uploads
+    parser_classes = [MultiPartParser, FormParser, JSONParser]  # Multipart for file uploads, JSON for normal CRUD
 
     def get_queryset(self):
         qs = Chapter.objects.all().order_by("course", "order")

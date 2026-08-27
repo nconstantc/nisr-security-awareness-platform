@@ -8,8 +8,8 @@ from .serializers import (
 )
 
 
-class PhishingTemplateListView(generics.ListAPIView):
-    """List all phishing templates"""
+class PhishingTemplateListView(generics.ListCreateAPIView):
+    """List and create phishing templates"""
     permission_classes = [permissions.IsAdminUser]
     queryset = PhishingTemplate.objects.all().order_by("-created_at")
     serializer_class = PhishingTemplateSerializer

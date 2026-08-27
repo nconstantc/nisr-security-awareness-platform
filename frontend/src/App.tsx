@@ -1,3 +1,4 @@
+// frontend/src/App.tsx
 import { Navigate, Route, Routes } from "react-router-dom";
 import { useAuth } from "./context/AuthContext";
 import { useTranslation } from "./context/LanguageContext";
@@ -17,7 +18,7 @@ import { ConsoleCoursesPage } from "./console/pages/ConsoleCoursesPage";
 import { ConsoleCourseEditPage } from "./console/pages/ConsoleCourseEditPage";
 import { ConsoleProblemEmployeesPage } from "./console/pages/ConsoleProblemEmployeesPage";
 import { ConsoleEmployeesPage } from "./console/pages/ConsoleEmployeesPage";
-import { ConsoleDepartmentsPage } from "./console/pages/ConsoleDepartmentsPage"; // ADD THIS
+import { ConsoleDepartmentsPage } from "./console/pages/ConsoleDepartmentsPage";
 import { ConsoleIntegrationsPage } from "./console/pages/ConsoleIntegrationsPage";
 import { ConsoleNotificationsPage } from "./console/pages/ConsoleNotificationsPage";
 import { ConsoleSecurityPage } from "./console/pages/ConsoleSecurityPage";
@@ -25,6 +26,7 @@ import { ConsoleLogsPage } from "./console/pages/ConsoleLogsPage";
 import { ConsoleBadgesPage } from "./console/pages/ConsoleBadgesPage";
 import { ConsoleLeaderboardPage } from "./console/pages/ConsoleLeaderboardPage";
 import { ConsolePhishingPage } from "./console/pages/ConsolePhishingPage";
+import { AppLayout } from "./components/AppLayout";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -35,9 +37,6 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
   return <>{children}</>;
 }
 
-// Employees/Integrations/Notifications - channel secrets, other users' passwords, role management.
-// A training manager (is_staff without is_superuser) can't get here, even knowing the direct URL -
-// the menu items are hidden in ConsoleLayout, but that's not protection by itself, only UX.
 function SuperAdminRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
   if (!user?.is_superuser) return <Navigate to="/console" replace />;
@@ -47,14 +46,19 @@ function SuperAdminRoute({ children }: { children: React.ReactNode }) {
 function App() {
   return (
     <Routes>
+      {/* Public Routes - No Footer */}
       <Route path="/login" element={<LoginPage />} />
       <Route path="/change-password" element={<ChangePasswordPage />} />
       <Route path="/badge/:token" element={<BadgeVerificationPage />} />
+      
+      {/* Protected Routes - With Footer */}
       <Route
         path="/"
         element={
           <ProtectedRoute>
-            <DashboardPage />
+            <AppLayout>
+              <DashboardPage />
+            </AppLayout>
           </ProtectedRoute>
         }
       />
@@ -62,7 +66,9 @@ function App() {
         path="/waves/:waveId"
         element={
           <ProtectedRoute>
-            <CoursePage />
+            <AppLayout>
+              <CoursePage />
+            </AppLayout>
           </ProtectedRoute>
         }
       />
@@ -70,7 +76,9 @@ function App() {
         path="/settings"
         element={
           <ProtectedRoute>
-            <SettingsPage />
+            <AppLayout>
+              <SettingsPage />
+            </AppLayout>
           </ProtectedRoute>
         }
       />
@@ -78,7 +86,9 @@ function App() {
         path="/badges"
         element={
           <ProtectedRoute>
-            <BadgesPage />
+            <AppLayout>
+              <BadgesPage />
+            </AppLayout>
           </ProtectedRoute>
         }
       />
@@ -86,10 +96,14 @@ function App() {
         path="/leaderboard"
         element={
           <ProtectedRoute>
-            <LeaderboardPage />
+            <AppLayout>
+              <LeaderboardPage />
+            </AppLayout>
           </ProtectedRoute>
         }
       />
+      
+      {/* Console Routes - Admin Interface (No Footer by default) */}
       <Route path="/console" element={<ConsoleLayout />}>
         <Route index element={<ConsoleDashboardPage />} />
         <Route path="waves" element={<ConsoleWavesPage />} />
@@ -147,11 +161,14 @@ function App() {
             </SuperAdminRoute>
           }
         />
-        <Route path="phishing" element={
-    <SuperAdminRoute>
-        <ConsolePhishingPage />
-    </SuperAdminRoute>
-} />
+        <Route 
+          path="phishing" 
+          element={
+            <SuperAdminRoute>
+              <ConsolePhishingPage />
+            </SuperAdminRoute>
+          } 
+        />
         <Route
           path="logs"
           element={
@@ -161,6 +178,8 @@ function App() {
           }
         />
       </Route>
+      
+      {/* Fallback Route */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
