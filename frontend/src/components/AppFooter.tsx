@@ -8,14 +8,23 @@ export function AppFooter() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="py-4 md:py-6">
                     <div className="flex flex-col md:flex-row justify-between items-center space-y-3 md:space-y-0">
-                        {/* Left: Copyright & Organization */}
-                        <div className="text-center md:text-left">
-                            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
-                                © {currentYear} National Institute of Statistics Rwanda (NISR)
-                            </p>
-                            <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
-                                All Rights Reserved
-                            </p>
+                        {/* Left: Logo + Copyright & Organization */}
+                        <div className="flex items-center space-x-3">
+                            {/* NISR Logo */}
+                            <img 
+                                src="/brand/nisr-logo.png" 
+                                alt="NISR Logo" 
+                                className="h-8 w-auto"
+                            />
+                            <div className="h-8 w-px bg-slate-300 dark:bg-slate-600 hidden sm:block"></div>
+                            <div className="text-center sm:text-left">
+                                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
+                                    Copyright© {currentYear} National Institute of Statistics Rwanda (NISR)
+                                </p>
+                                <p className="text-xs text-slate-400 dark:text-slate-500 mt-0.5">
+                                    All Rights Reserved
+                                </p>
+                            </div>
                         </div>
                         
                         {/* Center: Quick Links */}

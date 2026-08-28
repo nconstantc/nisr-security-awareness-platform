@@ -47,6 +47,25 @@ class EmployeeListView(generics.ListCreateAPIView):
         return super().create(request, *args, **kwargs)
 
 
+class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
+    """Retrieve, update, and remove an employee.
+
+    "Delete" is a soft-delete (is_active=False), not a real row delete - the employee is
+    referenced by wave assignments, quiz attempts, badges, phishing results, and login logs,
+    and hard-deleting would either cascade-destroy that audit history or fail outright
+    depending on each relation's on_delete. Every other employee endpoint already filters on
+    is_active=True, so this keeps that convention consistent.
+    """
+
+    serializer_class = EmployeeAdminSerializer
+    permission_classes = [IsAdminUser]
+    queryset = User.objects.all().select_related("department")
+
+    def perform_destroy(self, instance):
+        instance.is_active = False
+        instance.save(update_fields=["is_active"])
+
+
 class EmployeeResetPasswordView(APIView):
     """Reset employee password"""
     permission_classes = [IsSuperAdmin]

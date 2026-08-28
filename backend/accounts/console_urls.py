@@ -4,6 +4,7 @@ from .console_api import (
     DepartmentListView,
     DepartmentDetailView,
     EmployeeListView,
+    EmployeeDetailView,
     EmployeeResetPasswordView,
     EmployeeRoleView,
     LdapSettingsView,
@@ -19,6 +20,7 @@ urlpatterns = [
     
     # Employees
     path("employees/", EmployeeListView.as_view(), name="console-employees"),
+    path("employees/<int:pk>/", EmployeeDetailView.as_view(), name="console-employee-detail"),
     path("employees/<int:pk>/reset-password/", EmployeeResetPasswordView.as_view(), name="console-employee-reset-password"),
     path("employees/<int:pk>/role/", EmployeeRoleView.as_view(), name="console-employee-role"),
     
