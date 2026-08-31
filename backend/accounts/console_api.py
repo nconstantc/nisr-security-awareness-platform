@@ -1,3 +1,4 @@
+# backend/accounts/console_api.py
 from django.shortcuts import get_object_or_404
 from rest_framework import generics, mixins, status, viewsets
 from rest_framework.permissions import IsAdminUser
@@ -32,38 +33,64 @@ class DepartmentDetailView(generics.RetrieveUpdateDestroyAPIView):
 
 
 class EmployeeListView(generics.ListCreateAPIView):
+    """List and create employees"""
     serializer_class = EmployeeAdminSerializer
     permission_classes = [IsAdminUser]
 
     def get_queryset(self):
-        qs = User.objects.filter(is_active=True).select_related("department").order_by("full_name")
+        # Show ALL employees (including inactive) for admin visibility
+        qs = User.objects.all().select_related("department").order_by("full_name")
         search = self.request.query_params.get("search")
         if search:
             qs = qs.filter(full_name__icontains=search)
         return qs
 
     def create(self, request, *args, **kwargs):
-        # Add any custom logic for creating employees if needed
         return super().create(request, *args, **kwargs)
 
 
 class EmployeeDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """Retrieve, update, and remove an employee.
+    """Retrieve, update, and delete an employee.
 
-    "Delete" is a soft-delete (is_active=False), not a real row delete - the employee is
-    referenced by wave assignments, quiz attempts, badges, phishing results, and login logs,
-    and hard-deleting would either cascade-destroy that audit history or fail outright
-    depending on each relation's on_delete. Every other employee endpoint already filters on
-    is_active=True, so this keeps that convention consistent.
+    Deletion is a real row delete, but only when the employee has no training history.
+    None of the FKs from WaveAssignment/EmployeeBadge/PhishingResult/PhishingReport to User
+    are on_delete=PROTECT (they're CASCADE or SET_NULL), so Django itself would not stop a
+    hard delete - it would silently wipe out that history via cascade. This view adds its own
+    check instead, so deletion fails safely with a clear reason rather than quietly destroying
+    audit/training records.
     """
 
     serializer_class = EmployeeAdminSerializer
     permission_classes = [IsAdminUser]
     queryset = User.objects.all().select_related("department")
 
-    def perform_destroy(self, instance):
-        instance.is_active = False
-        instance.save(update_fields=["is_active"])
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+
+        from badges.models import EmployeeBadge
+        from phishing.models import PhishingReport, PhishingResult
+        from waves.models import WaveAssignment
+
+        has_history = (
+            WaveAssignment.objects.filter(employee=instance).exists()
+            or EmployeeBadge.objects.filter(employee=instance).exists()
+            or PhishingResult.objects.filter(employee=instance).exists()
+            or PhishingReport.objects.filter(employee=instance).exists()
+        )
+        if has_history:
+            return Response(
+                {
+                    "detail": (
+                        "This employee cannot be deleted because they have training history "
+                        "(wave assignments, quiz attempts, badges, or phishing simulation results). "
+                        "Deactivate them instead to remove them from active lists while keeping their records."
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        instance.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 class EmployeeResetPasswordView(APIView):
