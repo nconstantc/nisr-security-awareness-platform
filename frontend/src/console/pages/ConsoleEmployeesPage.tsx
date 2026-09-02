@@ -16,6 +16,7 @@ export function ConsoleEmployeesPage() {
   const [error, setError] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     full_name: "",
@@ -60,6 +61,8 @@ export function ConsoleEmployeesPage() {
     });
     setEditingId(null);
     setShowForm(false);
+    setShowPassword(false);
+    setError(null);
   }
 
   // Edit employee
@@ -74,18 +77,39 @@ export function ConsoleEmployeesPage() {
     });
     setEditingId(emp.id);
     setShowForm(true);
+    setShowPassword(false);
   }
 
-  // Handle form submission
+  // Handle form submission - FIXED: Type-safe approach without using 'delete'
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
     try {
-      const data = { ...formData };
-      if (!editingId && !data.password) {
-        setError("Password is required for new employees");
-        return;
+      // Build data object with optional password field
+      const data: {
+        email: string;
+        full_name: string;
+        department: string;
+        is_active: boolean;
+        role: EmployeeRole;
+        password?: string;
+      } = {
+        email: formData.email,
+        full_name: formData.full_name,
+        department: formData.department,
+        is_active: formData.is_active,
+        role: formData.role
+      };
+
+      // Only add password if it's provided
+      if (formData.password) {
+        if (formData.password.length < 8) {
+          setError("Password must be at least 8 characters");
+          return;
+        }
+        data.password = formData.password;
       }
+
       if (!data.department) {
         setError("Please select a department");
         return;
@@ -114,6 +138,7 @@ export function ConsoleEmployeesPage() {
     }
   }
 
+  // Handle reset password - generates random password
   async function handleReset(employee: ConsoleEmployee) {
     if (!confirm(t("consoleEmployees.confirmReset", { name: employee.full_name }))) return;
     setError(null);
@@ -131,6 +156,7 @@ export function ConsoleEmployeesPage() {
     }
   }
 
+  // Handle role change
   async function handleRoleChange(employee: ConsoleEmployee, role: EmployeeRole) {
     if (role === employee.role) return;
     setError(null);
@@ -144,6 +170,16 @@ export function ConsoleEmployeesPage() {
       setChangingRoleId(null);
     }
   }
+
+  // Copy password to clipboard
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      // You could add a toast notification here
+    } catch (err) {
+      console.error("Failed to copy:", err);
+    }
+  };
 
   return (
     <div>
@@ -165,18 +201,42 @@ export function ConsoleEmployeesPage() {
         </div>
       </div>
 
+      {/* Temporary Password Display */}
       {result && (
-        <div className="mb-6 bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-800 rounded-xl p-4 flex items-center justify-between gap-4">
-          <p className="text-sm text-amber-900 dark:text-amber-300">
-            {t("consoleEmployees.tempPasswordPrefix")} <span className="font-medium">{result.email}</span>:{" "}
-            <code className="bg-white dark:bg-slate-800 px-2 py-0.5 rounded border border-amber-300 dark:border-amber-800">{result.password}</code>.{" "}
-            {t("consoleEmployees.tempPasswordSuffix")}
-          </p>
-          <button onClick={() => setResult(null)} className="shrink-0 text-amber-700 hover:underline text-sm">
-            {t("consoleEmployees.close")}
-          </button>
+        <div className="mb-6 bg-amber-50 dark:bg-amber-950 border border-amber-300 dark:border-amber-800 rounded-xl p-4">
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1">
+              <p className="text-sm text-amber-900 dark:text-amber-300">
+                {t("consoleEmployees.tempPasswordPrefix")} <span className="font-medium">{result.email}</span>
+              </p>
+              <div className="mt-2 flex items-center gap-3 flex-wrap">
+                <code className="bg-white dark:bg-slate-800 px-3 py-1.5 rounded border border-amber-300 dark:border-amber-800 font-mono text-sm select-all break-all">
+                  {result.password}
+                </code>
+                <button
+                  onClick={() => copyToClipboard(result.password)}
+                  className="text-amber-700 hover:text-amber-900 dark:text-amber-400 dark:hover:text-amber-300 text-sm font-medium flex items-center gap-1"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3" />
+                  </svg>
+                  Copy
+                </button>
+              </div>
+              <p className="text-xs text-amber-700 dark:text-amber-400 mt-2">
+                {t("consoleEmployees.tempPasswordSuffix")}
+              </p>
+            </div>
+            <button 
+              onClick={() => setResult(null)} 
+              className="shrink-0 text-amber-700 hover:underline text-sm"
+            >
+              {t("consoleEmployees.close")}
+            </button>
+          </div>
         </div>
       )}
+      
       {error && <p className="mb-4 text-sm text-red-600 dark:text-red-400">{error}</p>}
 
       {/* Add/Edit Form */}
@@ -188,7 +248,9 @@ export function ConsoleEmployeesPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Full Name *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Full Name <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="text"
                   value={formData.full_name}
@@ -198,7 +260,9 @@ export function ConsoleEmployeesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Email *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Email <span className="text-red-500">*</span>
+                </label>
                 <input
                   type="email"
                   value={formData.email}
@@ -208,7 +272,9 @@ export function ConsoleEmployeesPage() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">Department *</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
+                  Department <span className="text-red-500">*</span>
+                </label>
                 <select
                   value={formData.department}
                   onChange={(e) => setFormData({...formData, department: e.target.value})}
@@ -223,15 +289,39 @@ export function ConsoleEmployeesPage() {
               </div>
               <div>
                 <label className="block text-sm font-medium text-slate-700 dark:text-slate-300">
-                  Password {editingId ? "(Leave blank to keep current)" : "*"}
+                  Password {editingId ? "(Leave blank to keep current)" : "(Optional)"}
                 </label>
-                <input
-                  type="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({...formData, password: e.target.value})}
-                  className="mt-1 w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 dark:bg-slate-700 dark:text-slate-100"
-                  required={!editingId}
-                />
+                <div className="relative mt-1">
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    value={formData.password}
+                    onChange={(e) => setFormData({...formData, password: e.target.value})}
+                    className="w-full border border-slate-300 dark:border-slate-600 rounded-lg px-3 py-2 pr-10 dark:bg-slate-700 dark:text-slate-100"
+                    placeholder={editingId ? "Leave blank to keep current" : "Enter password (optional)"}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 dark:hover:text-slate-300"
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                      </svg>
+                    )}
+                  </button>
+                </div>
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+                  {editingId 
+                    ? "Leave blank to keep current password" 
+                    : "Leave blank to set a temporary password later via Reset PW"}
+                </p>
               </div>
               <div className="flex items-center gap-4">
                 <label className="flex items-center gap-2 text-sm font-medium text-slate-700 dark:text-slate-300">
@@ -239,7 +329,7 @@ export function ConsoleEmployeesPage() {
                     type="checkbox"
                     checked={formData.is_active}
                     onChange={(e) => setFormData({...formData, is_active: e.target.checked})}
-                    className="h-4 w-4"
+                    className="h-4 w-4 rounded"
                   />
                   Active
                 </label>
@@ -257,10 +347,17 @@ export function ConsoleEmployeesPage() {
               </div>
             </div>
             <div className="flex gap-3">
-              <button type="submit" className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium">
+              <button 
+                type="submit" 
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg text-sm font-medium"
+              >
                 {editingId ? "Update" : "Create"} Employee
               </button>
-              <button type="button" onClick={resetForm} className="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-sm font-medium">
+              <button 
+                type="button" 
+                onClick={resetForm} 
+                className="px-4 py-2 bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 rounded-lg text-sm font-medium"
+              >
                 Cancel
               </button>
             </div>
@@ -270,6 +367,7 @@ export function ConsoleEmployeesPage() {
 
       {employees === null && <p className="text-slate-500 dark:text-slate-400">{t("consoleEmployees.loading")}</p>}
 
+      {/* Employees Table */}
       <div className="bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-200 dark:border-slate-700 overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -309,14 +407,24 @@ export function ConsoleEmployeesPage() {
                       {e.is_active ? 'Active' : 'Inactive'}
                     </span>
                   </td>
-                  <td className="px-4 py-2 text-right">
-                    <button onClick={() => editEmployee(e)} className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium mr-2">
+                  <td className="px-4 py-2 text-right whitespace-nowrap">
+                    <button 
+                      onClick={() => editEmployee(e)} 
+                      className="text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300 text-sm font-medium mr-2"
+                    >
                       Edit
                     </button>
-                    <button onClick={() => handleReset(e)} disabled={resettingId === e.id} className="text-blue-600 hover:underline disabled:opacity-50 mr-2">
+                    <button 
+                      onClick={() => handleReset(e)} 
+                      disabled={resettingId === e.id} 
+                      className="text-blue-600 hover:underline disabled:opacity-50 mr-2"
+                    >
                       {resettingId === e.id ? t("consoleEmployees.resetting") : "Reset PW"}
                     </button>
-                    <button onClick={() => handleDelete(e.id, e.full_name)} className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium">
+                    <button 
+                      onClick={() => handleDelete(e.id, e.full_name)} 
+                      className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300 text-sm font-medium"
+                    >
                       Delete
                     </button>
                   </td>
